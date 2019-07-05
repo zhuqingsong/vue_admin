@@ -18,23 +18,28 @@
         </el-form-item>
         <el-form-item label="客服手机号">
           <el-input v-model="form.parent_custom_mobile" class="wd"></el-input>
-          <el-button type="primary"  @click="serachParent(form.parent_custom_mobile)" icon="el-icon-search round" class="ml10">查询</el-button>
+          <el-button
+            type="primary"
+            @click="serachParent()"
+            icon="el-icon-search round"
+            class="ml10"
+          >查询</el-button>
         </el-form-item>
-         <!-- <el-form-item label="" v-show="addview">
-          <el-tag>{{ parent_name }}</el-tag>
-         </el-form-item> -->
-          <el-form-item label="开户城市" prop="bank_city">
-            <el-input v-model="form.bank_city"></el-input>
-         </el-form-item>
-          <el-form-item label="开户行" prop="bank_name">
-            <el-input v-model="form.bank_name"></el-input>
-         </el-form-item>
-          <el-form-item label="开户支行" prop="bank_branch_name">
-            <el-input v-model="form.bank_branch_name"></el-input>
-         </el-form-item>
-          <el-form-item label="服务客服" prop="parent_custom_id">
-            <el-input v-model="parent_name" :readonly="true"></el-input>
-         </el-form-item>
+        <el-form-item label v-show="dialong.addview">
+          <el-tag>{{ cust_name }}</el-tag>
+        </el-form-item>
+        <el-form-item label="开户行卡号" prop="bank_card">
+          <el-input v-model="form.bank_card"></el-input>
+        </el-form-item>
+        <el-form-item label="开户城市" prop="bank_city">
+          <el-input v-model="form.bank_city"></el-input>
+        </el-form-item>
+        <el-form-item label="开户行" prop="bank_name">
+          <el-input v-model="form.bank_name"></el-input>
+        </el-form-item>
+        <el-form-item label="开户支行" prop="bank_branch_name">
+          <el-input v-model="form.bank_branch_name"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialong.show = false">取 消</el-button>
@@ -49,31 +54,40 @@
 export default {
   name: "UserDialong",
   data() {
-    
-  let phoneReg = /^[1][3,4,5,7,8][0-9]{9}$/
-	let validatePhone = (rule, value, callback) => {
+    let phoneReg = /^[1][3,4,5,7,8][0-9]{9}$/;
+    let validatePhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('号码不能为空!!'))
+        return callback(new Error("号码不能为空!!"));
       }
-      setTimeout(() => {
-        if (!phoneReg.test(value)) {
-          callback(new Error('格式有误'))
-        } else {
-          callback()
-        }
-      }, 1000)
-    }
+      if (!phoneReg.test(value)) {
+        callback(new Error("格式有误"));
+      } else {
+        callback();
+      }
+    };
     return {
-      parent_name : "",
-      kc_data : [],
-      addview : false,
+      cust_name: "",
+      kc_data: [],
       formdialog: {
         pname: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
-        pmobile: [{ required: true,validator: validatePhone, trigger: 'blur' }],
-        bank_city: [{ required: true, message: "开户城市不能为空", trigger: "blur" }],
-        bank_name: [{ required: true, message: "开户行不能为空", trigger: "blur" }],
-        bank_branch_name: [{ required: true, message: "开户支行不能为空", trigger: "blur" }],
-        parent_custom_id: [{ required: true,message: "必须有对接客服",trigger: "blur" }],
+        pmobile: [
+          { required: true, validator: validatePhone, trigger: "blur" }
+        ],
+        bank_card: [
+          { required: true, message: "用户名不能为空", trigger: "blur" }
+        ],
+        bank_city: [
+          { required: true, message: "开户城市不能为空", trigger: "blur" }
+        ],
+        bank_name: [
+          { required: true, message: "开户行不能为空", trigger: "blur" }
+        ],
+        bank_branch_name: [
+          { required: true, message: "开户支行不能为空", trigger: "blur" }
+        ],
+        parent_custom_id: [
+          { required: true, message: "必须有对接客服", trigger: "blur" }
+        ]
       }
     };
   },
@@ -81,51 +95,53 @@ export default {
     dialong: Object,
     form: Object
   },
-  created() {
-  },
+  created() {},
   methods: {
-    init_course(){
-        this.$axios.post(`/api/staff/getCourseList`).then(res => { 
-            this.kc_data = res.data;
-        })
+    init_course() {
+      this.$axios.post(`/api/staff/getCourseList`).then(res => {
+        this.kc_data = res.data;
+      });
     },
-    serachParent(parentPhone) {
-      if(parentPhone==''){
+    serachParent() {
+      if (this.form.parent_custom_mobile == "") {
+        this.$message({
+          type: "success",
+          message: "必须要填写客服手机号哟！"
+        });
         return fasle;
       }
-     this.$axios.post(`/api/staff/findmoblie`,this.form).then(res => { 
-          console.log(res)
-          const { pmobile, pname, id } = res.data;
-          if(pname){
-            this.parent_name = pname;
-            this.addview = true;
-            this.form.parent_id = id;
-          }else{
-            this.parent_name = "";
-            this.form.parent_id  = 0;
-            this.addview = false;
-             this.$message({
-                type: "info",
-                message: "不存在的手机号"
-            });
-          }
-          
-     })
-    }, 
+      this.$axios.post(`/api/customlist/findcustom`, this.form).then(res => {
+        console.log(res);
+        const { cust_name, cust_phone, id } = res.data;
+        if (cust_name) {
+          this.cust_name = cust_name;
+          this.dialong.addview = true;
+          this.form.parent_custom_id = id;
+        } else {
+          this.cust_name = "";
+          this.form.parent_custom_id = 0;
+          this.dialong.addview = false;
+          this.$message({
+            type: "info",
+            message: "不存在的手机号"
+          });
+        }
+      });
+    },
     addHandle() {
-      this.$refs['formdoalog'].validate(valid => {
+      this.$refs["formdoalog"].validate(valid => {
         if (valid) {
           let url =
             this.dialong.option == "add" ? "add" : `/edit/${this.form.id}`;
-          this.$axios.post(`/api/staff/${url}`, this.form).then(res => {
+          this.$axios.post(`/api/customlist/${url}`, this.form).then(res => {
             this.$message({
               type: "success",
-              message: "数据添加成功"
-            })
-              this.dialong.show = false;
-              this.$emit("UserData");
+              message: "代理人添加成功"
+            });
+            this.dialong.show = false;
+            this.$emit("UserData");
             //清空内容
-             // this.form = "";
+            // this.form = "";
           });
         } else {
           console.log("error submit!!");
@@ -137,10 +153,10 @@ export default {
 };
 </script>
 <style scoped>
-  .wd{
-    width:80%;
-  }
-  .ml10{
-    margin-left:10px;
-  }
+.wd {
+  width: 80%;
+}
+.ml10 {
+  margin-left: 10px;
+}
 </style>
