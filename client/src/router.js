@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { md5, secretOrKey } from './common/util';
 // import Index from './views/Index.vue'
 // import Register from './views/register/Register'
 // import Login from "./views/logo/Login";
@@ -54,10 +55,22 @@ const router = new Router({
           meta: { title: "代理信息" }
         },
         {
-          path: "/fundList",
-          name: "fundList",
-          component: () => import("./views/fundmanagement/FundList"),
-          meta: { title: "资金流水" }
+          path: "/listcustom",
+          name: "listcustom",
+          component: () => import("./views/ListCustom"),
+          meta: { title: "客服信息" }
+        },
+        {
+          path: "/usermanage",
+          name: "usermanage",
+          component: () => import("./views/UserManage"),
+          meta: { title: "客服管理" }
+        },
+        {
+          path: "/kcmanage",
+          name: "kcmanage",
+          component: () => import("./views/ListCourse"),
+          meta: { title: "课程管理" }
         },
         {
           path: "/payList",
@@ -141,16 +154,19 @@ const router = new Router({
 });
 
 // 路由守卫
-// router.beforeEach((to, from, next) => {
-  
-//   const isLogin = localStorage.eleToken ? true : false
+router.beforeEach((to, from, next) => {
+  const eleToken = localStorage.eleToken;
+  const avatar = localStorage.avatar;
+  let avatarObj = avatar || 'zs';
+  let av = avatarObj == 'zs' ? 0 : JSON.parse(avatarObj);
+  const callmd5 = md5(av.call + secretOrKey);
+  const isLogin = callmd5 == eleToken ? true : false
+  if (to.path === '/login' || to.path === '/register') {
+    next()
+  } else {
+    isLogin ? next() : next('/login')
+  }
 
-//   if (to.path === '/login' || to.path === '/register') {
-//     next()
-//   } else {
-//     isLogin ? next() : next('/login')
-//   }
-  
-// });
+});
 
 export default router

@@ -8,8 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import moment from 'moment'
 import echarts from 'echarts'
 import VueQuillEditor from 'vue-quill-editor'
-Vue.prototype.$echarts = echarts 
-Vue.prototype.$moment = moment 
+Vue.prototype.$echarts = echarts
+Vue.prototype.$moment = moment
 Vue.use(VueQuillEditor)
 
 import VueAMap from 'vue-amap';
@@ -28,6 +28,7 @@ Vue.prototype.$axios = axios
 
 // 全局时间格式化过滤
 Vue.filter('moment', function (value, formatString) {
+  console.log(value);
   formatString = formatString || 'YYYY-MM-DD HH:mm:ss';
   return moment(value).format('YYYY-MM-DD');
 })

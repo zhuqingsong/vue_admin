@@ -23,10 +23,10 @@
                 <i class="iconfont icon-github"></i>
               </a>
             </el-tooltip>
-          </div> -->
+          </div>-->
           <div class="btn-fullscreen icon-font">
             <el-tooltip class="item" effect="dark" content="换色" placement="bottom">
-              <theme/>
+              <theme />
             </el-tooltip>
           </div>
           <!-- 全屏显示 -->
@@ -35,7 +35,7 @@
               <i class="el-icon-rank"></i>
             </el-tooltip>
           </div>
-          <img class="avatar" :src="users.avatar">
+          <img class="avatar" :src="users.avatar" />
           <div class="welcome">
             <p class="name comename">欢迎</p>
             <p class="name avatarname">{{users.name}}</p>
@@ -118,6 +118,7 @@ export default {
       // console.log('退出')
       //清除token
       localStorage.removeItem("eleToken");
+      localStorage.removeItem("avatar");
       //清除vuex
       this.$store.dispatch("createUser");
       //路由跳转

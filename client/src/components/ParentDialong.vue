@@ -112,7 +112,14 @@ export default {
       }
       this.$axios.post(`/api/customlist/findcustom`, this.form).then(res => {
         console.log(res);
-        const { cust_name, cust_phone, id } = res.data;
+        const { cust_name, cust_phone, id, cust_st } = res.data;
+        if (cust_st == 0) {
+          this.$message({
+            type: "error",
+            message: "你选择的客服已经禁用"
+          });
+          return false;
+        }
         if (cust_name) {
           this.cust_name = cust_name;
           this.dialong.addview = true;
@@ -131,6 +138,13 @@ export default {
     addHandle() {
       this.$refs["formdoalog"].validate(valid => {
         if (valid) {
+          if (this.form.parent_custom_id == "") {
+            this.$message({
+              type: "error",
+              message: "必须绑定一个维护客服"
+            });
+            return false;
+          }
           let url =
             this.dialong.option == "add" ? "add" : `/edit/${this.form.id}`;
           this.$axios.post(`/api/customlist/${url}`, this.form).then(res => {
@@ -154,7 +168,7 @@ export default {
 </script>
 <style scoped>
 .wd {
-  width: 80%;
+  width: 70%;
 }
 .ml10 {
   margin-left: 10px;

@@ -67,7 +67,7 @@ router.post('/add', (req, res) => {
   if (req.body.parent_custom_id) custInformation.parent_custom_id = req.body.parent_custom_id;
   custInformation.cash_back_price = 0;
   custInformation.total_cash_back = 0;
-  custInformation.parent_join_time = Number(new Date());
+  custInformation.parent_join_time = new Date();
   try {
     model.insertData('enter_parent_table', custInformation, function (rs) {
       res.json(rs)

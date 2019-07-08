@@ -1,95 +1,100 @@
 <template>
-    <div class="form_container">
-        <div class="manage_tip">
-            <span class="title">在线后台管理系统</span>
-            <el-form :model="registerUser" status-icon :rules="rules" ref="registerForm" class="registerForm" label-width="80px">
-                <el-form-item label="用户名" prop="name">
-                    <el-input v-model="registerUser.name" placeholder="请输入用户名"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="registerUser.email" placeholder="请输入邮箱"></el-input>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input type="password" v-model="registerUser.password" placeholder="请输入密码"></el-input>
-                </el-form-item>
-                <el-form-item label="确认密码" prop="password2">
-                    <el-input type="password" v-model="registerUser.password2" placeholder="请输入确认密码"></el-input>
-                </el-form-item>
-                <el-form-item label="选择身份">
-                    <el-select v-model="registerUser.identity" placeholder="请选择身份">
-                        <el-option value="manager" label="管理员"></el-option>
-                        <el-option value="employee" label="员工"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" class="submit_btn" @click="submitForm('registerForm')">提交</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+  <div class="form_container">
+    <div class="manage_tip">
+      <span class="title">在线后台管理系统</span>
+      <el-form
+        :model="registerUser"
+        status-icon
+        :rules="rules"
+        ref="registerForm"
+        class="registerForm"
+        label-width="80px"
+      >
+        <el-form-item label="手机号" prop="account">
+          <el-input v-model="registerUser.account" placeholder="请输入登陆手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="用户昵称" prop="username">
+          <el-input v-model="registerUser.username" placeholder="请输入昵称"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" v-model="registerUser.password" placeholder="请输入密码"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="password2">
+          <el-input type="password" v-model="registerUser.password2" placeholder="请输入确认密码"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="选择身份">
+          <el-select v-model="registerUser.identity" placeholder="请选择身份">
+            <el-option value="manager" label="管理员"></el-option>
+            <el-option value="employee" label="员工"></el-option>
+          </el-select>
+        </el-form-item>-->
+        <el-form-item>
+          <el-button type="primary" class="submit_btn" @click="submitForm('registerForm')">提交</el-button>
+        </el-form-item>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import { validatePhone } from "@/common/util";
 export default {
-  name: 'Register',
-  data () {
+  name: "Register",
+  data() {
     var validatePass2 = (rule, value, callback) => {
       if (value !== this.registerUser.password) {
-        callback(new Error('两次输入密码不一致!'))
+        callback(new Error("两次输入密码不一致!"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       registerUser: {
-        name: '',
-        email: '',
-        password: '',
-        password2: '',
-        identity: ''
+        account: "",
+        username: "",
+        password: "",
+        password2: ""
+        // identity: ""
       },
       rules: {
-        name: [
-          { required: true, message: '用户名不能为空', trigger: 'blur' },
-          { min: 2, max: 30, message: '长度在2到30个字符之间', trigger: 'blur' }
+        username: [
+          { required: true, message: "用户名不能为空", trigger: "blur" },
+          { min: 2, max: 30, message: "长度在2到30个字符之间", trigger: "blur" }
         ],
-        email: [
-          {
-            type: 'email',
-            required: true,
-            message: '邮箱格式不正确',
-            trigger: 'blur'
-          }
+        account: [
+          { required: true, validator: validatePhone, trigger: "blur" }
         ],
         password: [
-          { required: true, message: '密码不能为空', trigger: 'blur' },
-          { min: 6, max: 30, message: '长度在2到30个字符之间', trigger: 'blur' }
+          { required: true, message: "密码不能为空", trigger: "blur" },
+          { min: 6, max: 30, message: "长度在2到30个字符之间", trigger: "blur" }
         ],
         password2: [
-          { required: true, message: '确认密码不能为空', trigger: 'blur' },
-          { min: 6, max: 30, message: '长度在6到30个之间', trigger: 'blur' },
-          { validator: validatePass2, trigger: 'blur' }
+          { required: true, message: "确认密码不能为空", trigger: "blur" },
+          { min: 6, max: 30, message: "长度在6到30个之间", trigger: "blur" },
+          { validator: validatePass2, trigger: "blur" }
         ]
       }
-    }
+    };
   },
   methods: {
-    submitForm (formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					this.$axios.post('/api/users/register',this.registerUser).then(res => {
-            this.$message({
-              message: '注册成功',
-              type: 'success'
-            })
-            this.$router.push('/login')
-          })
-				}
-      })
-		}
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios
+            .post("/api/users/register", this.registerUser)
+            .then(res => {
+              this.$message({
+                message: "注册成功审核",
+                type: "success"
+              });
+              this.$router.push("/login");
+            });
+        }
+      });
+    }
   }
-}
+};
 </script>
 
 <style scoped>
