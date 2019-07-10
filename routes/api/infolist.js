@@ -69,8 +69,14 @@ router.post('/add', (req, res) => {
   custInformation.total_cash_back = 0;
   custInformation.parent_join_time = new Date();
   try {
-    model.insertData('enter_parent_table', custInformation, function (rs) {
-      res.json(rs)
+    model.findOne("enter_parent_table", { "pmobile": req.body.pmobile }, function (rs) {
+      if (rs.length > 0) {
+        return res.status(400).json("该代理人已经存在");
+      } else {
+        model.insertData('enter_parent_table', custInformation, function (rs) {
+          res.json(rs)
+        })
+      }
     })
   } catch (error) {
     return res.status(400).json("学员信息添加错误")

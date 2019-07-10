@@ -26,13 +26,20 @@ router.post('/add', (req, res) => {
   if (req.body.parent_id) staffInformation.parent_id = req.body.parent_id;
   if (idArr) staffInformation.course_id = idArr.join('-');
   staffInformation.date_current = new Date();
-  try {
-    model.insertData('enter_stu_table', staffInformation, function (rs) {
-      res.json(rs)
-    })
-  } catch (error) {
-    return res.status(400).json("学员信息添加错误")
-  }
+  model.findOne("enter_stu_table", { "stu_phone": req.body.stu_phone }, function (rs) {
+    if (rs.length > 0) {
+      return res.status(400).json("该学员已经报名了哦!")
+    } else {
+      try {
+        model.insertData('enter_stu_table', staffInformation, function (rs) {
+          res.json(rs)
+        })
+      } catch (error) {
+        return res.status(400).json("学员信息添加错误")
+      }
+    }
+  })
+
 })
 
 // $route  GET api/staff
