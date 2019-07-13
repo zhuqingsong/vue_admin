@@ -27,6 +27,24 @@ router.get('/userlist', (req, res) => {
   })
 })
 
+router.post('/search', (req, res) => {
+  let pmobile = "";
+  if (req.body.pmobile) pmobile = req.body.pmobile;
+  const sql = "select p.*,c.cust_name,c.cust_wx from enter_parent_table p left join enter_custom_table c on p.parent_custom_id = c.id where pmobile=" + pmobile + "  ORDER BY p.id"
+  model.findSql(sql, function (rs) {
+    try {
+      if (rs.length > 0) {
+        res.json(rs);
+      } else {
+        return res.status(400).json("没有一条数据")
+      }
+    } catch (error) {
+      return res.status(400).json("数据不存在")
+    }
+  })
+})
+
+
 // $route  GET api/staff/findmobile
 // @desc   获取单个父级信息
 // @access public
@@ -82,6 +100,22 @@ router.post('/add', (req, res) => {
     return res.status(400).json("学员信息添加错误")
   }
 })
+
+
+// $route  POST api/staff/delete/:id
+// @desc   删除单个信息
+// @access public
+
+router.delete("/delete/:id", (req, res) => {
+  const sql = `delete from enter_parent_table where id = ${req.params.id}`
+  model.findSql(sql, function (rs) {
+    try {
+      res.json(rs);
+    } catch (error) {
+      return res.status(400).json("删除失败")
+    }
+  })
+});
 
 
 

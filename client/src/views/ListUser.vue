@@ -1,7 +1,7 @@
 <template>
   <div class="list">
     <div class="staff-top">
-      <el-form :inline="true">
+      <el-form :inline="true" :model="formInSearch">
         <el-form-item>
           <el-button
             type="primary"
@@ -9,6 +9,12 @@
             icon="el-icon-edit-outline"
             @click="onAddParent()"
           >添加</el-button>
+        </el-form-item>
+        <el-form-item label="代理人查询">
+          <el-input v-model="formInSearch.pmobile" placeholder="代理人手机号"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmitCheck()">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -64,6 +70,14 @@
             <span>{{ scope.row.cust_wx }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="操作" fixed="right">
+          <template slot-scope="scope">
+            <!-- <el-button
+                    size="mini"
+            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="page">
@@ -87,6 +101,9 @@ export default {
   data() {
     return {
       tableData: [], //数据
+      formInSearch: {
+        pmobile: ""
+      },
       paginations: {
         page_index: 1, //当前页
         total: 0, //总数
@@ -133,6 +150,43 @@ export default {
         parent_custom_id: 0,
         parent_custom_mobile: ""
       };
+    },
+    handleDelete(index, row) {
+      //删除数据
+      this.$confirm("此操作将永久删除该代理人, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios.delete(`/api/customlist/delete/${row.id}`).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          });
+          this.getInfoList();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    onSubmitCheck() {
+      if (this.formInSearch.pmobile == "") {
+        this.getInfoList();
+      } else {
+        this.$axios
+          .post("/api/customlist/search", this.formInSearch)
+          .then(res => {
+            this.allTableData = res.data;
+            // console.log(this.tableData)
+            this.setPaginations();
+          })
+          .catch(err => console.log(err));
+      }
     },
     getInfoList() {
       this.$axios.get("/api/customlist/userlist").then(res => {

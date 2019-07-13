@@ -73,10 +73,10 @@ const router = new Router({
           meta: { title: "课程管理" }
         },
         {
-          path: "/payList",
-          name: "payList",
-          component: () => import("./views/fundmanagement/PayList"),
-          meta: { title: "支付单据" }
+          path: "/bmcourse",
+          name: "bmcourse",
+          component: () => import("./views/bmList"),
+          meta: { title: "报名列表" }
         },
         {
           path: "/Infoshow",

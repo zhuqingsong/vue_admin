@@ -2,19 +2,11 @@
   <div class="staff">
     <div class="staff-top">
       <el-form :inline="true" :model="formInSearch" class="demo-form-inline">
-        <el-form-item>
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-edit-outline"
-            @click="onAddMoney()"
-          >添加</el-button>
-        </el-form-item>
-        <el-form-item label="学员查询" prop="stu_phone">
+        <el-form-item label="学员报名课程查询" prop="stu_phone">
           <el-input v-model="formInSearch.stu_phone" placeholder="学员手机号"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmitCheck()">查询</el-button>
+          <el-button type="primary" @click="onSubmitSearch()">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,34 +18,34 @@
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="学员姓名" align="center" width="100">
+        <el-table-column label="课程名称" align="center" width="100">
           <template slot-scope="scope">
-            <span>{{ scope.row.stu_name }}</span>
+            <span>{{ scope.row.course_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="上级代理人" align="center" width="150">
+        <el-table-column label="课程缴费" align="center" width="150">
           <template slot-scope="scope">
-            <span>{{ scope.row.pname | formatST }}</span>
+            <span>{{ scope.row.hand_st | formatST }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="课程价格" align="center" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.course_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="课程成交价格" align="center" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.hand_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="报名学员" align="center" width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.stu_name }}</span>
           </template>
         </el-table-column>
         <el-table-column label="学员手机号" align="center" width="180">
           <template slot-scope="scope">
             <span>{{ scope.row.stu_phone }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="等级" align="center" width="100">
-          <template slot-scope="scope">
-            <span>{{ scope.row.role_msg }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="缴费状态" align="center" width="100">
-          <template slot-scope="scope">
-            <span>{{ scope.row.stu_st | formatSV }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="注册时间" align="center" width="180">
-          <template slot-scope="scope">
-            <span>{{ scope.row.data_current | moment }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right">
@@ -77,21 +69,15 @@
         :total="paginations.total"
       ></el-pagination>
     </div>
-    <UserDialong :dialong="dialong" :form="form" @UserData="userInfo"></UserDialong>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import UserDialong from "../components/UserDialong";
-import { validatePhone } from "../common/util";
 export default {
-  name: "Staff",
+  name: "bmList",
   filters: {
-    formatST(name) {
-      return name || "没有代理人";
-    },
-    formatSV(ST) {
+    formatST(ST) {
       return ST == 1 ? "已缴费" : "未缴费";
     }
   },
@@ -108,32 +94,16 @@ export default {
         page_size: 5, //一页显示多少
         page_sizes: [5, 10, 15, 20], //每页显示多少条
         layout: "total, sizes, prev, pager, next, jumper"
-      },
-      dialong: {
-        //弹出框
-        show: false,
-        title: "",
-        option: "edit"
-      },
-      form: {
-        //添加和删除需要传递的字段名
-        stu_name: "",
-        parent_id: 0,
-        parent_mobile: "",
-        stu_phone: "",
-        course_id: [],
-        stu_st: 0,
-        role_id: 1
       }
     };
   },
   methods: {
-    onSubmitCheck() {
+    onSubmitSearch() {
       if (this.formInSearch.stu_phone == "") {
         this.userInfo();
       } else {
         this.$axios
-          .post("/api/staff/search", this.formInSearch)
+          .post("/api/staff/searchkc", this.formInSearch)
           .then(res => {
             console.log(res);
             this.allTableData = res.data;
@@ -145,7 +115,7 @@ export default {
     },
     userInfo() {
       this.$axios
-        .get("/api/staff")
+        .get("/api/staff/getLPayCourse")
         .then(res => {
           console.log(res);
           this.allTableData = res.data;
@@ -176,13 +146,13 @@ export default {
     handleDelete(index, row) {
       //删除数据
       let that = this;
-      this.$confirm("此操作将永久删除该学员, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该学员课程, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$axios.delete(`/api/staff/delete/${row.id}`).then(res => {
+          this.$axios.delete(`/api/staff/deletekc/${row.id}`).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -196,21 +166,6 @@ export default {
             message: "已取消删除"
           });
         });
-    },
-    onAddMoney() {
-      //添加内容
-      this.dialong = {
-        title: "添加学员",
-        show: true,
-        option: "add"
-      };
-      this.form = {
-        stu_name: "",
-        parent_id: 0,
-        parent_mobile: "",
-        stu_phone: "",
-        course_id: []
-      };
     },
     handleSizeChange(page_size) {
       this.paginations.page_index = 1; //第一页
@@ -247,9 +202,6 @@ export default {
   },
   created() {
     this.userInfo();
-  },
-  components: {
-    UserDialong
   }
 };
 </script>

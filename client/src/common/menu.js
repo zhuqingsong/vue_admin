@@ -23,13 +23,18 @@ module.exports = {
     },
     {
       icon: "el-icon-s-custom",
-      name: "客服管理",
+      name: "登陆用户",
       path: "/usermanage"
     },
     {
       icon: "el-icon-star-on",
       name: "课程管理",
       path: "/kcmanage"
+    },
+    {
+      icon: "el-icon-star-on",
+      name: "报名课程",
+      path: "/bmcourse"
     }
     // {
     //   icon: "el-icon-document",
