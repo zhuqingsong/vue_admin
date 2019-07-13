@@ -233,10 +233,13 @@ router.post("/edit/:id", passport.authenticate("jwt", { session: false }), (req,
 // @access public
 
 router.delete("/delete/:id", (req, res) => {
-  const sql = `delete from enter_stu_table where id = ${req.params.id}`
+  const sql = `delete from enter_stu_table where id = ${req.params.id}`;
   model.findSql(sql, function (rs) {
     try {
-      res.json(rs);
+        let handsql = `delete from enter_hand_table where stu_id = ${req.params.id}`
+        model.findSql(handsql, function (rs) {
+            res.json(rs)
+        })
     } catch (error) {
       return res.status(400).json("删除失败")
     }

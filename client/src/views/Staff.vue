@@ -46,11 +46,6 @@
             <span>{{ scope.row.role_msg }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="缴费状态" align="center" width="100">
-          <template slot-scope="scope">
-            <span>{{ scope.row.stu_st | formatSV }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="注册时间" align="center" width="180">
           <template slot-scope="scope">
             <span>{{ scope.row.data_current | moment }}</span>
@@ -90,9 +85,6 @@ export default {
   filters: {
     formatST(name) {
       return name || "没有代理人";
-    },
-    formatSV(ST) {
-      return ST == 1 ? "已缴费" : "未缴费";
     }
   },
   data() {
