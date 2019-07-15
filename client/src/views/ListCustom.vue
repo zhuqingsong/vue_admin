@@ -89,6 +89,7 @@ export default {
   data() {
     return {
       btn: ["启用", "禁用"],
+      role: ["确定启用该账号？", "确认要禁用该客服吗?"],
       tableData: [], //数据
       paginations: {
         page_index: 1, //当前页
@@ -128,7 +129,7 @@ export default {
   methods: {
     handleNologin(index, row) {
       //删除数据
-      this.$confirm("确认要禁用该客服吗?", "提示", {
+      this.$confirm(this.role[row.cust_st], "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"

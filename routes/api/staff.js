@@ -259,5 +259,24 @@ router.delete("/deletekc/:id", (req, res) => {
 });
 
 
+//设置课程已购买
+
+router.post("/paykc", (req, res) => {
+  const price = req.body.price || 0;
+  const id = req.body.id || 0;
+  const sql = `update  enter_hand_table set hand_st=1, hand_price=${price}  where id = ${id}`
+  model.findSql(sql, function (rs) {
+    try {
+      if(rs.affectedRows > 0){
+        res.json(rs);
+      }else{
+        return res.status(400).json("不存在的用户id")
+      }
+    } catch (error) {
+      return res.status(400).json("设置失败")
+    }
+  })
+});
+
 
 module.exports = router;

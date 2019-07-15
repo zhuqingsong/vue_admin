@@ -50,10 +50,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right">
           <template slot-scope="scope">
-            <!-- <el-button
-                    size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              v-if="scope.row.hand_st==0"
+              @click="handleEdit(scope.$index, scope.row)"
+            >设置已缴费</el-button>
+            <el-button size="mini" type="success" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,11 +72,13 @@
         :total="paginations.total"
       ></el-pagination>
     </div>
+    <PayDialog :dialog="dialog" :form="form" @UserData="userInfo"></PayDialog>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import PayDialog from "../components/PayDialog";
 export default {
   name: "bmList",
   filters: {
@@ -94,6 +99,15 @@ export default {
         page_size: 5, //一页显示多少
         page_sizes: [5, 10, 15, 20], //每页显示多少条
         layout: "total, sizes, prev, pager, next, jumper"
+      },
+      dialog: {
+        title: "缴费",
+        show: false,
+        option: "edit"
+      },
+      form: {
+        price: "",
+        id: ""
       }
     };
   },
@@ -125,23 +139,12 @@ export default {
         .catch(err => console.log(err));
     },
     handleEdit(index, row) {
-      // console.log(row)
-      // //编辑
-      // this.dialong = {
-      //   title: "编辑信息",
-      //   show: true,
-      //   option:"edit"
-      // }
-      // this.form = {
-      //     name: row.name,
-      //     sex: row.sex,
-      //     state: row.state,
-      //     hobby: row.hobby,
-      //     marriage: row.marriage,
-      //     birthday: row.birthday,
-      //     address: row.address,
-      //     id:row._id
-      // }
+      this.dialog = {
+        title: "缴费",
+        show: true,
+        option: "add"
+      };
+      this.form.id = row.id;
     },
     handleDelete(index, row) {
       //删除数据
@@ -202,6 +205,9 @@ export default {
   },
   created() {
     this.userInfo();
+  },
+  components: {
+    PayDialog
   }
 };
 </script>
