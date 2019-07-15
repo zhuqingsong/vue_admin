@@ -55,6 +55,7 @@ router.post('/add', (req, res) => {
   if (req.body.cust_wx) custInformation.cust_wx = req.body.cust_wx;
   custInformation.cust_st = 1;
   custInformation.cust_join_time = new Date();
+  custInformation.code_img = "/images/kefuhao.jpg";
   try {
     model.insertData('enter_custom_table', custInformation, function (rs) {
       res.json(rs)
